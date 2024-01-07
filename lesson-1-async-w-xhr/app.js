@@ -1,8 +1,8 @@
-const getUnsplashQueryUrl = (text) =>
-  `https://api.unsplash.com/search/photos?page=1&query=${text}`;
+const getUnsplashQueryUrl = (query) =>
+  `https://api.unsplash.com/search/photos?page=1&query=${query}`;
 
-const getNyTimesQueryUrl = (text) =>
-  `http://api.nytimes.com/svc/search/v2/articlesearch.json?q=${text}&api-key=KAywMcFRlSlaqsToYRVMzQIn9AMIAfhp`;
+const getNyTimesQueryUrl = (query) =>
+  `http://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&api-key=KAywMcFRlSlaqsToYRVMzQIn9AMIAfhp`;
 
 (function () {
   const form = document.querySelector("#search-form");
@@ -25,16 +25,14 @@ const getNyTimesQueryUrl = (text) =>
       "Authorization",
       "Client-ID XgGCWwKPt1zo9_jVDoruVQnmLocqhHn3IzlaOHPTP50"
     );
-    unsplashRequest.onload = () => addImg(unsplashRequest);
-    articleRequest.onload = () => addArticles(articleRequest);
+    const getRes = (req) => JSON.parse(req.responseText);
+    unsplashRequest.onload = () => addImg(getRes(unsplashRequest));
+    articleRequest.onload = () => addArticles(getRes(articleRequest));
 
     unsplashRequest.send();
     articleRequest.send();
 
-    const getRes = (req) => JSON.parse(req.responseText);
-
-    function addImg(req) {
-      const res = getRes(req)?.results;
+    function addImg(res) {
       let htmlcontent = "";
 
       if (res) {
@@ -51,8 +49,7 @@ const getNyTimesQueryUrl = (text) =>
       responseContainer.insertAdjacentHTML("afterbegin", htmlcontent);
     }
 
-    function addArticles(req) {
-      const res = getRes(req)?.response.docs;
+    function addArticles(res) {
       let htmlcontent = "";
 
       if (res || res.length) {
